@@ -1,7 +1,14 @@
 package org.example;
 
+import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.Activity;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import org.openqa.selenium.By;
+import org.openqa.selenium.DeviceRotation;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -11,41 +18,35 @@ import java.net.MalformedURLException;
 public class MisceallanousAppiumAction extends BaseTest {
 
     @Test
-    public void WifiSettingsName() throws MalformedURLException {
+    public void Miscellanous() throws MalformedURLException {
 
-        // Actual automatisation
-        // different localisateurs: Xpath, id, accessibilityId, classname, androidUIAutomator
-        // comment trouver la déclaration xpath : //tagName[@attribute= 'value']
-        driver.findElement(AppiumBy.accessibilityId("Preference")).click();
-        driver.findElement(By.xpath("//android.widget.TextView[@content-desc='3. Preference dependencies']")).click();
+        //adb shell dumpsys window | grep -E 'mCurrentFocus' : cette commande affiche les info nécessaire pour l'activité actuelle affiché sur l'app
+        //App Package & App Activity
+        // ces deux premiers lignes nous permettent d'accéder directement à la page dans l'app mobile qui concerne le test à traiter
+        Activity activity = new Activity("io.appium.android.apis","io.appium.android.apis.preference.PreferenceDependencies");
+        ((JavascriptExecutor) driver).executeScript("mobile: startActivity", ImmutableMap.of("intent","io.appium.android.apis/io.appium.android.apis.preference.PreferenceDependencies"));
+
         driver.findElement(By.id("android:id/checkbox")).click();
+        DeviceRotation landScape = new DeviceRotation(0,0,90);
+        driver.rotate(landScape);
         driver.findElement(By.xpath("(//android.widget.RelativeLayout)[2]")).click();
         String alertTitle = driver.findElement(By.id("android:id/alertTitle")).getText();
         Assert.assertEquals(alertTitle,"WiFi settings");
-        driver.findElement(By.id("android:id/edit")).sendKeys("test wifi");
+
+        // copy paste
+        // copy to clipboard - paste it clipboard
+        driver.setClipboardText("test wifi");
+        driver.findElement(By.id("android:id/edit")).sendKeys(driver.getClipboardText());
+        driver.pressKey(new KeyEvent(AndroidKey.ENTER));
         driver.findElements(AppiumBy.className("android.widget.Button")).get(1).click();
 
-
-
-    }
-
-    /*
-    @Test
-    public void altagemTest() {
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_continue")).click();
-        driver.findElement(By.id("com.android.permissioncontroller:id/permission_allow_always_button")).click();
-        driver.findElement(AppiumBy.className("android.widget.EditText")).sendKeys("tehceksd");
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_connect")).click();
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/et_username")).click();
-        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.altagem.app.itDebug.debug:id/search_src_text']")).sendKeys("Alexandre LAINE");
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/tv_name")).click();
-        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.altagem.app.itDebug.debug:id/et_password']")).sendKeys("0000");
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_connect")).click();
+        // create object event to manage different events from mobile
+        driver.pressKey(new KeyEvent(AndroidKey.BACK));
+        driver.pressKey(new KeyEvent(AndroidKey.HOME));
 
 
 
 
     }
 
-     */
 }

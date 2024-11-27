@@ -1,7 +1,11 @@
 package org.example;
 
+import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.Activity;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 
@@ -9,19 +13,22 @@ public class LogOutAltagem extends BaseTest {
 
 
     @Test
-    public void FirstLogin() {
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_continue")).click();
-        driver.findElement(By.id("com.android.permissioncontroller:id/permission_allow_always_button")).click();
-        //driver.findElement(By.id("com.android.packageinstaller:id/permission_allow_button")).click();
+    public void LogOutTest() {
 
-        driver.findElement(AppiumBy.className("android.widget.EditText")).sendKeys("tehceksd");
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_connect")).click();
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/et_username")).click();
-        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.altagem.app.itDebug.debug:id/search_src_text']")).sendKeys("Alexandre LAINE");
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/tv_name")).click();
-        driver.findElement(By.xpath("//android.widget.EditText[@resource-id='com.altagem.app.itDebug.debug:id/et_password']")).sendKeys("0000");
-        driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_connect")).click();
 
+        Activity activity = new Activity("com.altagem.app.itDebug.debug","com.altagem.app.ui.home.HomeActivity");
+        ((JavascriptExecutor) driver).executeScript("mobile: startActivity", ImmutableMap.of("intent","com.altagem.app.itDebug.debug/com.altagem.app.ui.home.HomeActivity"));
+
+
+        // Navigation vers la déconnexion
+        driver.findElement(AppiumBy.accessibilityId("Open navigation drawer")).click();
+        driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().text(\"Logout\"));"));
+        driver.findElement(By.xpath("//android.widget.CheckedTextView[@resource-id='com.altagem.app.itDebug.debug:id/design_menu_item_text' and @text='Logout']")).click();
+
+        // Vérification après déconnexion
+        boolean isConnectButtonDisplayed = driver.findElement(By.id("com.altagem.app.itDebug.debug:id/btn_connect")).isDisplayed();
+        Assert.assertTrue(isConnectButtonDisplayed, "Le bouton de connexion devrait être visible après la déconnexion.");
     }
-
 }
+
